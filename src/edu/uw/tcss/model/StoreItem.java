@@ -106,9 +106,9 @@ public class StoreItem implements Item, Comparable<StoreItem> {
     public String toString() {
         String str = "";
 
-        str += name + ", " + nf.format(price.doubleValue());
+        str += name + ", " + nf.format(price);
         if (bp.doubleValue() > 0) {
-            str += (" (" + bq + " for " + nf.format(bp.doubleValue()) + ")");
+            str += (" (" + bq + " for " + nf.format(bp) + ")");
         }
         return str;
     }

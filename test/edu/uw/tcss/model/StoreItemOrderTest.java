@@ -172,10 +172,7 @@ public class StoreItemOrderTest
      }
     @Test
     void testToString() {
-        assertAll("toString test.",
-                () -> {
-                    assertEquals("Item HashCode: " + STORE_ITEM_ORDER_TEST.getItem().hashCode() + ", Item Quantity: " + STORE_ITEM_ORDER_TEST.getQuantity(), STORE_ITEM_ORDER_TEST.toString(), "toString should be: \"Item: \"HashCode\" + quantity: 10");
-                });
-    }
+         assertEquals("Item HashCode: " + STORE_ITEM_ORDER_TEST.getItem().hashCode() + ", Item Quantity: " + STORE_ITEM_ORDER_TEST.getQuantity(), STORE_ITEM_ORDER_TEST.toString(), "toString should be: \"Item: \"HashCode\" + quantity: 10");
+     }
 }
 

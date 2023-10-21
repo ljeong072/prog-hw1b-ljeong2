@@ -1,10 +1,9 @@
 package edu.uw.tcss.model;
 
-import edu.uw.tcss.model.Item;
-import edu.uw.tcss.model.StoreItem;
 import org.junit.jupiter.api.Test;
-
+import java.util.ArrayList;
 import java.math.BigDecimal;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -335,7 +334,56 @@ class ItemTest {
                     Item fourArgument = new StoreItem(BULK_ITEM_NAME, new BigDecimal(ITEM_PRICE), BULK_QUANTITY, new BigDecimal(BULK_PRICE));
                     assertEquals(TEST_BULK_ITEM, fourArgument, "4 argument different objects with the same state should be equals() true");
                     assertEquals(TEST_BULK_ITEM.hashCode(), fourArgument.hashCode(), "4 argument objects equal by equals must have the same hashCode");
+                });
+    }
+    @Test
+    void testCompareToTest() {
+        assertAll("Testing if the compareTo method sorts alphabetically in order.",
+                () -> {
+                    ArrayList<StoreItem> testlist= new ArrayList<>();
+                    testlist.add(new StoreItem("ZBC", new BigDecimal(1)));
+                    testlist.add(new StoreItem("ABC", new BigDecimal(1)));
+                    testlist.add(new StoreItem("KBC", new BigDecimal(1)));
+                    testlist.add(new StoreItem("CBC", new BigDecimal(1)));
 
+                    ArrayList<StoreItem> correctlist= new ArrayList<>();
+                    correctlist.add(new StoreItem("ABC", new BigDecimal(1)));
+                    correctlist.add(new StoreItem("CBC", new BigDecimal(1)));
+                    correctlist.add(new StoreItem("KBC", new BigDecimal(1)));
+                    correctlist.add(new StoreItem("ZBC", new BigDecimal(1)));
+
+                    Collections.sort(testlist);
+                    assertEquals(correctlist.toString(), testlist.toString(), "The list for multiple character Strings should have been sorted" +
+                            "properly");
+                },
+                () -> {
+                    ArrayList<StoreItem> testlist = new ArrayList<>();
+                    testlist.add(new StoreItem("A", new BigDecimal(1)));
+                    testlist.add(new StoreItem("B", new BigDecimal(1)));
+                    testlist.add(new StoreItem("C", new BigDecimal(1)));
+
+                    ArrayList<StoreItem> correctlist= new ArrayList<>();
+                    correctlist.add(new StoreItem("A", new BigDecimal(1)));
+                    correctlist.add(new StoreItem("B", new BigDecimal(1)));
+                    correctlist.add(new StoreItem("C", new BigDecimal(1)));
+
+                    Collections.sort(testlist);
+                    assertEquals(correctlist.toString(), testlist.toString(), "The list is default placed alphabetically so if this is correct," +
+                            "your compareTo method was probably inverted alphabetically");
+                },
+                () -> {
+                    ArrayList<StoreItem> testlist= new ArrayList<>();
+                    testlist.add(new StoreItem("C", new BigDecimal(1)));
+                    testlist.add(new StoreItem("B", new BigDecimal(1)));
+                    testlist.add(new StoreItem("A", new BigDecimal(1)));
+
+                    ArrayList<StoreItem> correctlist= new ArrayList<>();
+                    correctlist.add(new StoreItem("A", new BigDecimal(1)));
+                    correctlist.add(new StoreItem("B", new BigDecimal(1)));
+                    correctlist.add(new StoreItem("C", new BigDecimal(1)));
+
+                    Collections.sort(testlist);
+                    assertEquals(correctlist.toString(), testlist.toString(), "The list for single character strings should have been sorted properly");
                 });
     }
 }

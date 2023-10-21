@@ -1,10 +1,9 @@
-// Finish and comment me!
-
 package edu.uw.tcss.model;
 
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * This class creates a "cart" for the client to put their items in before purchasing
@@ -12,14 +11,13 @@ import java.math.BigDecimal;
  */
 public class StoreCart implements Cart {
     /**
-     * This instance field holds the itemorder objects
+     * This instance field holds the itemorder objects in an ArrayList<StoreItemOrder>.
      */
     private final ArrayList<StoreItemOrder> cart;
     /**
      * This instance field represents whether the client has a membership or not.
      */
     private boolean membership;
-
     /**
      * This constructor creates a cart object and sets its values
      * to "default". The cart is empty and the client does not
@@ -32,20 +30,25 @@ public class StoreCart implements Cart {
     }
 
     /**
-     * This method adds an item to the cart.
+     * This method adds an item to the cart. Before adding, it will iterate through the cart and delete
+     * the previous order to update the cart.
      *
      * @param theOrder reprsents the item order containing the
      * type of item and the quantity of such items.
-     * @Override
      */
     @Override
     public void add(final StoreItemOrder theOrder) {
+        final Iterator<StoreItemOrder> itr = cart.iterator();
+        StoreItemOrder itemorder;
+        StoreItem item;
 
-        for (int i = 0; i < cart.size(); i++)
+        while(itr.hasNext())
         {
-            if (theOrder.getItem().equals(cart.get(i).getItem()))
+            itemorder = itr.next();
+
+            if (itemorder.getItem().equals(theOrder.getItem()))
             {
-                cart.remove(i);
+                itr.remove();
             }
         }
         cart.add(theOrder);
@@ -55,7 +58,6 @@ public class StoreCart implements Cart {
      * This method sets the client's membership to has or does not have.
      * @param theMembership is a boolean representing true if the client
      * has a membership and false if the client does not.
-     * @Override
      */
     @Override
     public void setMembership(final boolean theMembership) {
@@ -66,40 +68,28 @@ public class StoreCart implements Cart {
      * This method takes all the items in the cart and calculates
      * the total of all the items.
      * @return a bigdecimal object representing the total.
-     * @Override
      */
     @Override
     public BigDecimal calculateTotal() {
+        BigDecimal totalprice = new BigDecimal(0);
+        for (final ItemOrder itemo : cart) {
+            int itemquantity = itemo.getQuantity();
+            final StoreItem item = (StoreItem) itemo.getItem();
+            final int localbq = item.getBulkQuantity();
 
-            BigDecimal totalprice = new BigDecimal(0);
+            if (membership && item.isBulk() && itemquantity >= localbq) {
+                final BigDecimal total = new BigDecimal(itemquantity/localbq);
+                itemquantity %= localbq;
 
-            for (final ItemOrder itemo : cart) {
-                final int itemquantity = itemo.getQuantity();
-                final StoreItem item = (StoreItem) itemo.getItem();
-                if (membership && item.isBulk() &&
-                        itemquantity >= item.getBulkQuantity()) {
-                    final int localbq = item.getBulkQuantity();
-
-                    final int remainder = itemquantity%localbq;
-                    final int total = itemquantity/localbq;
-
-                    final BigDecimal finprice = new BigDecimal(item.getBulkPrice().doubleValue() * total
-                            + remainder * item.getPrice().doubleValue());
-
-                    final BigDecimal round = finprice.setScale(2, RoundingMode.HALF_EVEN);
-                    totalprice = totalprice.add(round);
-                } else {
-                    final BigDecimal finprice = new BigDecimal(item.getPrice().doubleValue() * itemquantity);
-                    final BigDecimal round = finprice.setScale(2, RoundingMode.HALF_EVEN);
-                    totalprice = totalprice.add(round);
-                }
+                totalprice = totalprice.add(item.getBulkPrice().multiply(total));
             }
-            return totalprice;
+            totalprice = totalprice.add(item.getPrice().multiply(new BigDecimal(itemquantity)));
         }
+        return totalprice.setScale(2, RoundingMode.HALF_EVEN);
+    }
 
     /**
      * This method clears all the items in the cart.
-     * @Override
      */
     @Override
     public void clear() {
@@ -109,7 +99,6 @@ public class StoreCart implements Cart {
     /**
      * This method returns the size of the cart
      * @return the size of the cart as an integer.
-     * @Override
      */
     @Override
     public int getCartSize() {
@@ -117,11 +106,16 @@ public class StoreCart implements Cart {
     }
 
     /**
-     * This creates the cart's contents and formats them into a string.
-     * @return a String representing the cart.
-     * @Override.
+     * This toString takes the hascode and quantites of the storeitemorder object inside string.
+     * Each item is separated by a space.
+     * @return a string representing the contents of a cart
      */
+    @Override
     public String toString() {
-        return cart.toString();
+        final StringBuilder str = new StringBuilder();
+        for (int i = 0; i < (cart.size() - 1); i++) {
+            str.append(cart.get(i).toString()).append(" ");
+        }
+        return "[" + str.append(cart.getLast().toString()) + "]";
     }
 }
